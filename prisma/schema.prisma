@@ -1,0 +1,89 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DIRECT_DATABASE_URL")
+}
+
+model Vehicle {
+  id            String          @id @default(cuid())
+  name          String
+  type          String
+  licensePlate  String          @unique
+  fuelType      String
+  bs6Compliant  Boolean         @default(true)
+  currentLat    Float           @default(28.6139)
+  currentLng    Float           @default(77.209)
+  status        String          @default("active")
+  co2Total      Float           @default(0)
+  createdAt     DateTime        @default(now())
+  updatedAt     DateTime        @updatedAt
+  routes        Route[]
+  alerts        Alert[]
+  readings      CarbonReading[]
+}
+
+model Route {
+  id          String   @id @default(cuid())
+  vehicleId   String
+  vehicle     Vehicle  @relation(fields: [vehicleId], references: [id])
+  originName  String
+  originLat   Float
+  originLng   Float
+  destName    String
+  destLat     Float
+  destLng     Float
+  distance    Float
+  duration    Float
+  carbonScore Float
+  fuelUsed    Float
+  status      String   @default("planned")
+  waypoints   String   @default("[]")
+  createdAt   DateTime @default(now())
+}
+
+model EmissionZone {
+  id           String  @id @default(cuid())
+  name         String
+  type         String
+  centerLat    Float
+  centerLng    Float
+  radiusKm     Float
+  restrictions String  @default("{}")
+  active       Boolean @default(true)
+}
+
+model Alert {
+  id        String   @id @default(cuid())
+  vehicleId String
+  vehicle   Vehicle  @relation(fields: [vehicleId], references: [id])
+  type      String
+  severity  String
+  message   String
+  resolved  Boolean  @default(false)
+  createdAt DateTime @default(now())
+}
+
+model CarbonReading {
+  id        String   @id @default(cuid())
+  vehicleId String
+  vehicle   Vehicle  @relation(fields: [vehicleId], references: [id])
+  co2       Float
+  pm25      Float
+  nox       Float
+  speed     Float    @default(40)
+  createdAt DateTime @default(now())
+}
+
+model WeatherCache {
+  id        String   @id @default(cuid())
+  city      String
+  temp      Float
+  humidity  Float
+  windSpeed Float
+  aqi       Int
+  condition String
+  updatedAt DateTime @default(now())
+}
