@@ -136,8 +136,8 @@ export default function FleetPage() {
                                     </td>
                                     <td>{latestCo2 ? `${latestCo2.toFixed(1)} g/km` : '—'}</td>
                                     <td>
-                                        {v._count?.alerts > 0 && (
-                                            <span className="badge badge-red">{v._count.alerts}</span>
+                                        {(v._count?.alerts ?? 0) > 0 && (
+                                            <span className="badge badge-red">{v._count?.alerts}</span>
                                         )}
                                     </td>
                                 </tr>
